@@ -34,10 +34,10 @@ defineOptions({
 <style scoped>
 .rules-title-global {
   position: absolute;
-  top: 120px;
+  top: 95px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 26px;
+  font-size: 28px;
   color: var(--svet);
   font-family: 'Press Start 2P', monospace;
   text-align: center;
@@ -45,18 +45,18 @@ defineOptions({
 }
 
 .rules-section {
-  padding-top: 160px;
-  padding-bottom: 30px;
+  padding-top: 60px;
+  padding-bottom: 20px;
   box-sizing: border-box;
   width: 100%;
 }
 
 .rules-text {
-  max-width: 600px;
+  max-width: 650px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--svet);
-  line-height: 2;
+  line-height: 2.2;
 }
 
 .rule-blok {
@@ -68,7 +68,7 @@ defineOptions({
 }
 
 .emoji-text {
-  font-size: 20px;
+  font-size: 22px;
   margin-right: 10px;
 }
 
@@ -77,10 +77,14 @@ defineOptions({
 }
 
 .emoji-img {
-  width: 800px;
+  width: 650px;
   height: auto;
   image-rendering: pixelated;
   max-width: 100%;
+}
+
+.rule-blok p {
+  margin-bottom: 12px;
 }
 </style>
 
