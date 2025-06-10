@@ -16,12 +16,24 @@
 
         <div class="mb-3 text-start">
           <label for="name" class="form-label">Имя:</label>
-          <input type="text" id="name" v-model="form.name" required class="form-control pixel-input" />
+          <input
+            type="text"
+            id="name"
+            v-model="name"
+            required
+            class="form-control pixel-input"
+          />
         </div>
 
         <div class="mb-3 text-start">
           <label for="message" class="form-label">Сообщение:</label>
-          <textarea id="message" v-model="form.message" rows="4" required class="form-control pixel-input"></textarea>
+          <textarea
+            id="message"
+            v-model="message"
+            rows="4"
+            required
+            class="form-control pixel-input"
+          ></textarea>
         </div>
 
         <button type="submit" class="btn-mixerr">отправить</button>
@@ -32,20 +44,16 @@
 
 <script setup>
 defineOptions({ name: 'AboutPage' })
-import { reactive } from 'vue'
+
 import AppNavbar from '@/components/AppNavbar.vue'
 import '@/assets/mixerr.css'
 
-const form = reactive({
-  name: '',
-  message: ''
-})
+import { useGameStore } from '@/stores/gameStore'
+import { storeToRefs } from 'pinia'
 
-function submitForm() {
-  alert(`Спасибо, ${form.name}! Мы получили ваше сообщение: "${form.message}"`)
-  form.name = ''
-  form.message = ''
-}
+const game = useGameStore()
+const { name, message } = storeToRefs(game)
+const { submitForm } = game
 </script>
 
 <style scoped>

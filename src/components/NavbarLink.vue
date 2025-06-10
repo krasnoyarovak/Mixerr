@@ -1,14 +1,16 @@
 <template>
+  <!-- Компонент ссылочного элемента навигации -->
   <a
     :href="href"
     class="pixel-link"
     :class="{ filled }"
   >
-    <slot />
+    <slot /> <!-- Слот для отображения вложенного содержимого (текста ссылки) -->
   </a>
 </template>
 
 <script setup>
+// Объявляем входные свойства компонента
 defineProps({
   href: String,
   filled: Boolean

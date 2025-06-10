@@ -19,14 +19,14 @@
           <h1 class="zagolovok mb-5 text-center w-100">СОЗДАТЬ КОМНАТУ</h1>
 
           <label for="username" class="form-label">Имя игрока:</label>
-          <input type="text" id="username" v-model="name" class="form-control pixel-input mb-5" required />
+          <input type="text" id="username" v-model="nickname" class="form-control pixel-input mb-5" required />
 
           <div class="room-code mb-4">
             Код комнаты: <span class="text-akcent">{{ roomCode }}</span>
           </div>
 
           <div class="d-flex justify-content-center w-100 mt-4">
-            <button type="submit" class="btn-mixerr btn-start btn-wide" @click="submitRoom">НАЧАТЬ</button>
+            <button type="submit" class="btn-mixerr btn-start btn-wide">НАЧАТЬ</button>
           </div>
         </form>
       </div>
@@ -35,32 +35,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AppNavbar from '@/components/AppNavbar.vue'
+import { useGameStore } from '@/stores/gameStore'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
-
-const defaultAvatar = new URL('@/assets/img/smile_think.png', import.meta.url).href
-const name = ref('')
-const avatar = ref('')
-const roomCode = generateRoomCode()
-
-function generateRoomCode() {
-  return Math.random().toString(36).substring(2, 7).toUpperCase()
-}
-
-function handleAvatarUpload(e) {
-  const file = e.target.files[0]
-  if (file) avatar.value = URL.createObjectURL(file)
-}
-
-function submitRoom() {
-  // можно сохранить имя и аватар в хранилище или Pinia при необходимости
-  router.push('/room')
-}
+const gameStore = useGameStore()
+const { nickname, avatar, roomCode } = storeToRefs(gameStore)
+const { handleAvatarUpload, defaultAvatar } = gameStore
 
 const avatarToShow = computed(() => avatar.value || defaultAvatar)
+
+function submitRoom() {
+  router.push('/room')  // Переход на страницу комнаты
+}
 </script>
 
 <style scoped>

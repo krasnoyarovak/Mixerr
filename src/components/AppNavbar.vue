@@ -1,3 +1,4 @@
+<!-- Компонент для шапки сайта -->
 <template>
   <header class="fixed-top d-flex justify-content-between align-items-center px-5 py-4 bg-mixerr w-100">
     <router-link to="/" class="logo-link">
