@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+  --fon: #18130f;
+  --svet: #f3f0cf;
+  --akcent: #ec5e28;
+  --muted: #a59e8f;
+}
+
+body {
+  background-color: var(--fon) !important;
+  color: var(--svet);
+  font-family: 'Press Start 2P', monospace;
+}
+
+.page {
+  background-color: var(--fon);
+  color: var(--svet);
+  font-family: 'Press Start 2P', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-blok {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-blok {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.logo-tekst {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 128px;
+  line-height: 1;
+  color: var(--svet);
+  text-align: left;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+.pers-anima {
+  position: absolute;
+  top: -90px;
+  left: 250px;
+  width: 275px;
+  height: 275px;
+  background-image: url('./img/pers1.png');
+  background-size: cover;
+  animation: begunok 1s steps(3) infinite;
+  image-rendering: pixelated;
+  z-index: 2;
+}
+
+@keyframes begunok {
+  0%   { background-image: url('./img/pers1.png'); }
+  33%  { background-image: url('./img/pers2.png'); }
+  66%  { background-image: url('./img/pers3.png'); }
+  100% { background-image: url('./img/pers1.png'); }
+}
+
+.knopki-blok {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 520px;
+  z-index: 3;
+  align-items: center;
+}
+
+.knopki-blok button {
+  width: 100%;
+}
+
+.btn-mixerr {
+  border: 2px solid var(--akcent);
+  background: var(--akcent);
+  color: var(--fon);
+  font-family: 'Press Start 2P', monospace;
+  padding: 20px 35px;
+  border-radius: 15px;
+  text-transform: uppercase;
+  transition: transform 0.2s ease-in-out;
+  will-change: transform;
+  font-size: 20px;
+}
+
+.btn-mixerr:hover {
+  transform: scale(1.05);
+}
+
+.btn-mixerr-light {
+  background-color: transparent;
+  color: var(--svet);
+  border: 2px solid var(--akcent);
+  font-family: 'Press Start 2P', monospace;
+  padding: 20px 35px;
+  border-radius: 15px;
+  text-transform: uppercase;
+  position: relative;
+  transition: transform 0.2s ease-in-out;
+  will-change: transform;
+  font-size: 20px;
+}
+
+.btn-mixerr-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  padding: 2px;
+  background: repeating-linear-gradient(45deg, var(--akcent), var(--akcent) 2px, transparent 2px, transparent 4px);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.btn-mixerr-light:hover {
+  transform: scale(1.05);
+}
+
+.font-custom {
+  font-family: 'Press Start 2P', monospace;
+}
+
+.bg-mixerr {
+  background-color: var(--fon) !important;
+}
+
+.text-mixerr,
+.text-svet {
+  color: var(--svet) !important;
+}
+
+.page {
+  padding-top: 150px;
+}
+
+.btn-link-as-button {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
+
