@@ -1,29 +1,42 @@
 <template>
-  <div class="page px-4 pt-5">
+  <div class="page">
     <AppNavbar />
 
-    <div class="round-container d-flex flex-column align-items-center text-center">
-      <h1 class="round-title mb-4">РАУНД 1</h1>
+    <div class="d-flex flex-row">
+      <!-- левая панель -->
+      <div class="sidebar d-flex flex-column align-items-center px-4 pt-4">
+        <h2 class="room-code-label">КОД КОМНАТЫ</h2>
+        <div class="avatars-list mt-4">
+          <div
+            v-for="(user, i) in users"
+            :key="i"
+            class="avatar-block mb-3"
+            :class="{ 'active-user': i === currentUserIndex }"
+          >
+            <img :src="user.avatar" alt="avatar" class="avatar-img" />
+            <p class="avatar-name">{{ user.name }}</p>
+          </div>
+        </div>
+      </div>
 
-      <p class="round-instruction mb-4">
-        Напиши фразу — мы переведем её в эмодзи ✨
-      </p>
+      <!-- правая часть -->
+      <div class="main-area flex-grow-1 d-flex flex-column justify-content-between px-5 pt-4">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+          <div class="emoji-box w-100 d-flex justify-content-center align-items-center">
+            <h1 class="emoji-output-title text-center">{{ emojis || 'Переводим вашу фразу...' }}</h1>
+          </div>
+        </div>
 
-      <form @submit.prevent="submitPhrase" class="round-form w-100">
-        <textarea
-          v-model="phrase"
-          required
-          class="form-control pixel-input mb-4"
-          rows="3"
-          placeholder="Твоя фраза..."
-        ></textarea>
-        <button type="submit" class="btn-mixerr">ПЕРЕВЕСТИ</button>
-      </form>
-
-      <p v-if="emojis" class="emoji-output mt-4">{{ emojis }}</p>
-      <p v-if="errorMsg" class="text-danger mt-3">{{ errorMsg }}</p>
-
-      <div class="pers-anima-background"></div>
+        <form @submit.prevent="submitPhrase" class="chat-input-block d-flex align-items-center gap-2 mb-4">
+          <textarea
+            v-model="phrase"
+            placeholder="Напиши фразу — мы переведем её в эмодзи ✨"
+            rows="2"
+            class="form-control pixel-input flex-grow-1"
+          ></textarea>
+          <button type="submit" class="btn-mixerr px-4">ОТПРАВИТЬ</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -34,36 +47,46 @@ import AppNavbar from '@/components/AppNavbar.vue'
 
 const phrase = ref('')
 const emojis = ref('')
-const errorMsg = ref('')
+const currentUserIndex = ref(0)
+
+const users = [
+  { name: 'Игрок 1', avatar: new URL('@/assets/img/smile_laugh.png', import.meta.url).href },
+  { name: 'Игрок 2', avatar: new URL('@/assets/img/smile_think.png', import.meta.url).href },
+  { name: 'Игрок 3', avatar: new URL('@/assets/img/smile_win.png', import.meta.url).href }
+]
 
 async function submitPhrase() {
   emojis.value = ''
-  errorMsg.value = ''
 
-const prompt = `
-Твоя задача — строго и моментально перевести фразу пользователя на язык эмодзи.
-💥 Только эмодзи, НИКАКИХ слов, объяснений, кавычек, мыслей или размышлений.
-🛑 Если ты добавишь хоть один текстовый символ — это ошибка.
-✅ Просто набор эмодзи, подходящих по смыслу. Никаких "Я думаю", "можно использовать", "например".
+  const prompt = `
+Ты — Emoji MixBot, AI-система, которая переводит фразы на язык эмодзи. Твоя задача — точно и коротко передавать смысл только с помощью эмодзи.
 
-Примеры:
+📌 Требования:
+- ❌ Не используй текст, символы, кавычки, переводы строк или пояснения.
+- ✅ Используй только эмодзи.
+- ⛔ Ответ не должен содержать никаких служебных или вспомогательных слов.
+- 🔁 Ответ всегда должен быть одной строкой.
+
+📎 Примеры:
 "я люблю пиццу" → 🍕❤️
-"работаю всю ночь" → 💻🌙🧠
+"работаю ночью" → 💻🌙🧠
 "еду в отпуск" → ✈️🏖️😎
+"собака лает" → 🐶🔊
 
-Фраза: "${phrase.value}"`
+🔤 Входная фраза: "${phrase.value}"
+🔁 Эмодзи:`
 
   try {
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer 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',
+        'Authorization': 'Bearer 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',
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'http://localhost:5173',
-        'X-Title': 'mixerr'
+        'X-Title': 'mixerr',
+        'HTTP-Referer': 'http://localhost:5173'
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-r1-0528-qwen3-8b:free",
+        model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
         messages: [
           {
             role: 'user',
@@ -74,94 +97,87 @@ const prompt = `
     })
 
     const data = await res.json()
-
-    console.log('📥 Исходная фраза:', phrase.value)
-    console.log('📤 Ответ от нейросети:', data)
-
-    if (data.choices?.[0]?.message?.content) {
-      emojis.value = data.choices[0].message.content.trim()
-    } else {
-      errorMsg.value = '⚠️ Ответ пустой или некорректный'
-    }
-
+    if (data.error) throw new Error(data.error.message)
+    emojis.value = data.choices?.[0]?.message?.content.trim() || ''
     phrase.value = ''
+
+    // анимация перехода на следующего игрока
+    currentUserIndex.value = (currentUserIndex.value + 1) % users.length
   } catch (err) {
-    errorMsg.value = '⚠️ Ошибка при обращении к API'
-    console.error('❌ Ошибка запроса:', err)
+    emojis.value = '⚠️ Ошибка перевода'
+    console.error('Ошибка API:', err)
   }
 }
 </script>
 
 <style scoped>
-.round-container {
-  padding-top: 100px;
+.page {
+  height: 100vh;
   font-family: 'Press Start 2P', monospace;
   color: var(--svet);
-  position: relative;
-  min-height: calc(100vh - 100px);
   overflow: hidden;
 }
 
-.round-title {
-  font-size: 26px;
+.sidebar {
+  width: 300px;
+  background-color: var(--fon);
+  border-right: 2px dashed var(--akcent);
+}
+
+.room-code-label {
+  font-size: 20px;
   color: var(--akcent);
 }
 
-.round-instruction {
-  font-size: 14px;
-  color: var(--muted);
-  max-width: 600px;
+.avatars-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.round-form {
-  max-width: 600px;
-  z-index: 2;
+.avatar-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s;
 }
 
-.pixel-input {
-  background-color: var(--fon);
-  color: var(--svet);
-  border: 2px solid var(--akcent);
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
-  padding: 12px;
+.avatar-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
   border-radius: 12px;
-  resize: none;
-}
-
-.pixel-input:focus {
-  outline: none;
-  box-shadow: 0 0 4px var(--akcent);
-}
-
-.emoji-output {
-  font-size: 28px;
-  color: var(--svet);
-  max-width: 600px;
-  word-wrap: break-word;
-}
-
-.pers-anima-background {
-  position: absolute;
-  bottom: -100px;
-  left: -100px;
-  width: 800px;
-  height: 800px;
-  background-image: url('@/assets/img/pers1.png');
-  background-size: cover;
-  animation: begunok 1s steps(3) infinite;
+  border: 2px solid var(--akcent);
   image-rendering: pixelated;
-  opacity: 0.2;
-  pointer-events: none;
-  z-index: 0;
+  background-color: var(--fon);
+  filter: brightness(0.6);
+  transition: filter 0.4s ease;
 }
 
-@keyframes begunok {
-  0%   { background-image: url('@/assets/img/pers1.png'); }
-  33%  { background-image: url('@/assets/img/pers2.png'); }
-  66%  { background-image: url('@/assets/img/pers3.png'); }
-  100% { background-image: url('@/assets/img/pers1.png'); }
+.active-user .avatar-img {
+  filter: brightness(1.4);
+  box-shadow: 0 0 15px 4px var(--akcent);
+}
+
+.avatar-name {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.emoji-output-title {
+  font-size: 48px;
+  word-wrap: break-word;
+  max-width: 600px;
+  color: var(--svet);
+  text-align: center;
+  margin-top: 60px;
+}
+
+.chat-input-block {
+  padding: 12px;
+  border-top: 2px solid var(--akcent);
 }
 </style>
-
-<style scoped src="@/assets/mixerr.css"></style>
