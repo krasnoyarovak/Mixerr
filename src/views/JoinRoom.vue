@@ -13,19 +13,31 @@
         </div>
       </div>
 
-<!-- правая часть -->
+      <!-- правая часть -->
       <div class="right-side d-flex flex-column justify-content-center align-items-start" style="padding: 0 60px;">
-        <form @submit.prevent="joinRoom" class="form-fixed-block">
+        <form @submit.prevent="handleSubmit" class="form-fixed-block">
           <h1 class="zagolovok mb-5 text-center w-100">ПРИСОЕДИНИТЬСЯ</h1>
 
           <label for="username" class="form-label">Имя игрока:</label>
-          <input type="text" id="username" v-model="name" class="form-control pixel-input mb-5" required />
+          <input
+            type="text"
+            id="username"
+            v-model="nickname"
+            class="form-control pixel-input mb-5"
+            required
+          />
 
           <label for="roomInput" class="form-label">Код комнаты:</label>
-          <input type="text" id="roomInput" v-model="roomInput" class="form-control pixel-input mb-5 text-uppercase" required />
+          <input
+            type="text"
+            id="roomInput"
+            v-model="roomInput"
+            class="form-control pixel-input mb-5 text-uppercase"
+            required
+          />
 
           <div class="d-flex justify-content-center w-100 mt-4">
-            <button type="submit" class="btn-mixerr btn-start btn-wide" @click="submitRoom">НАЧАТЬ</button>
+            <button type="submit" class="btn-mixerr btn-start btn-wide">НАЧАТЬ</button>
           </div>
         </form>
       </div>
@@ -34,28 +46,24 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AppNavbar from '@/components/AppNavbar.vue'
+import { useGameStore } from '@/stores/gameStore'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
+const gameStore = useGameStore()
+const { name, avatar, roomCode } = storeToRefs(gameStore)
+const { handleAvatarUpload } = gameStore
 
-const defaultAvatar = new URL('@/assets/img/smile_think.png', import.meta.url).href
-const name = ref('')
-const avatar = ref('')
+const avatarToShow = computed(() => avatar.value || gameStore.defaultAvatar)
 
-function handleAvatarUpload(e) {
-  const file = e.target.files[0]
-  if (file) avatar.value = URL.createObjectURL(file)
-}
-
-function submitRoom() {
-  // можно сохранить имя и аватар в хранилище или Pinia при необходимости
+function handleSubmit() {
   router.push('/room')
 }
-
-const avatarToShow = computed(() => avatar.value || defaultAvatar)
 </script>
+
 
 <style scoped>
 .create-room-layout {

@@ -11,7 +11,11 @@
             v-for="(user, i) in users"
             :key="i"
             class="avatar-block mb-3"
-            :class="{ 'active-user': i === currentUserIndex }"
+            :class="{
+              'active-user':
+                (!showGuessInput && i === activeUserIndex) ||
+                (showGuessInput && i === currentUserIndex)
+            }"
           >
             <img :src="user.avatar" alt="avatar" class="avatar-img" />
             <p class="avatar-name">{{ user.name }}</p>
@@ -22,12 +26,24 @@
       <!-- правая часть -->
       <div class="main-area flex-grow-1 d-flex flex-column justify-content-between px-5 pt-4">
         <div class="d-flex justify-content-between align-items-start mb-4">
-          <div class="emoji-box w-100 d-flex justify-content-center align-items-center">
+          <div class="emoji-box w-100 d-flex flex-column justify-content-center align-items-center">
             <h1 class="emoji-output-title text-center">{{ emojis || 'Переводим вашу фразу...' }}</h1>
+
+            <div v-if="showGuessInput" class="guess-block mt-4">
+              <h4 class="mb-2">Угадай фразу:</h4>
+              <form @submit.prevent="submitGuess" class="d-flex gap-2">
+                <input v-model="currentGuess" class="form-control" placeholder="Ваш вариант..." />
+                <button class="btn-mixerr">УГАДАТЬ</button>
+              </form>
+            </div>
           </div>
         </div>
 
-        <form @submit.prevent="submitPhrase" class="chat-input-block d-flex align-items-center gap-2 mb-4">
+        <form
+          v-if="!showGuessInput"
+          @submit.prevent="submitPhrase"
+          class="chat-input-block d-flex align-items-center gap-2 mb-4"
+        >
           <textarea
             v-model="phrase"
             placeholder="Напиши фразу — мы переведем её в эмодзи ✨"
@@ -42,73 +58,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useGameStore } from '@/stores/gameStore'
 import AppNavbar from '@/components/AppNavbar.vue'
+import { storeToRefs } from 'pinia'
 
-const phrase = ref('')
-const emojis = ref('')
-const currentUserIndex = ref(0)
-
-const users = [
-  { name: 'Игрок 1', avatar: new URL('@/assets/img/smile_laugh.png', import.meta.url).href },
-  { name: 'Игрок 2', avatar: new URL('@/assets/img/smile_think.png', import.meta.url).href },
-  { name: 'Игрок 3', avatar: new URL('@/assets/img/smile_win.png', import.meta.url).href }
-]
-
-async function submitPhrase() {
-  emojis.value = ''
-
-  const prompt = `
-Ты — Emoji MixBot, AI-система, которая переводит фразы на язык эмодзи. Твоя задача — точно и коротко передавать смысл только с помощью эмодзи.
-
-📌 Требования:
-- ❌ Не используй текст, символы, кавычки, переводы строк или пояснения.
-- ✅ Используй только эмодзи.
-- ⛔ Ответ не должен содержать никаких служебных или вспомогательных слов.
-- 🔁 Ответ всегда должен быть одной строкой.
-
-📎 Примеры:
-"я люблю пиццу" → 🍕❤️
-"работаю ночью" → 💻🌙🧠
-"еду в отпуск" → ✈️🏖️😎
-"собака лает" → 🐶🔊
-
-🔤 Входная фраза: "${phrase.value}"
-🔁 Эмодзи:`
-
-  try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer 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',
-        'Content-Type': 'application/json',
-        'X-Title': 'mixerr',
-        'HTTP-Referer': 'http://localhost:5173'
-      },
-      body: JSON.stringify({
-        model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
-      })
-    })
-
-    const data = await res.json()
-    if (data.error) throw new Error(data.error.message)
-    emojis.value = data.choices?.[0]?.message?.content.trim() || ''
-    phrase.value = ''
-
-    // анимация перехода на следующего игрока
-    currentUserIndex.value = (currentUserIndex.value + 1) % users.length
-  } catch (err) {
-    emojis.value = '⚠️ Ошибка перевода'
-    console.error('Ошибка API:', err)
-  }
-}
+const game = useGameStore()
+const {
+  phrase,
+  emojis,
+  originalPhrase,
+  showGuessInput,
+  currentGuess,
+  guesses,
+  activeUserIndex,
+  currentUserIndex,
+  users
+} = storeToRefs(game)
+const { submitPhrase, submitGuess } = game
 </script>
+
 
 <style scoped>
 .page {
@@ -144,8 +112,8 @@ async function submitPhrase() {
 }
 
 .avatar-img {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
   border-radius: 12px;
   border: 2px solid var(--akcent);
