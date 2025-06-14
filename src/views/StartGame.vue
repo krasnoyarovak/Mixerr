@@ -7,6 +7,7 @@
       <div class="sidebar d-flex flex-column align-items-center px-4 pt-4">
         <h2 class="room-code-label">КОД КОМНАТЫ</h2>
         <div class="avatars-list mt-4">
+          <!-- перебираются игроки и активный подсвечивается -->
           <div
             v-for="(user, i) in users"
             :key="i"
@@ -27,18 +28,20 @@
       <div class="main-area flex-grow-1 d-flex flex-column justify-content-between px-5 pt-4">
         <div class="d-flex justify-content-between align-items-start mb-4">
           <div class="emoji-box w-100 d-flex flex-column justify-content-center align-items-center">
+            <!-- если есть эмодзи, то покажет эмодзи, если нет - то текст-заглушку -->
             <h1 class="emoji-output-title text-center">{{ emojis || 'Переводим вашу фразу...' }}</h1>
-
+            <!-- Условный блок: появляется только тогда, когда пора угадывать -->
             <div v-if="showGuessInput" class="guess-block mt-4">
               <h4 class="mb-2">Угадай фразу:</h4>
               <form @submit.prevent="submitGuess" class="d-flex gap-2">
+                <!-- сохраняем в currentGuess то, что ввел пользователь -->
                 <input v-model="currentGuess" class="form-control" placeholder="Ваш вариант..." />
                 <button class="btn-mixerr">УГАДАТЬ</button>
               </form>
             </div>
           </div>
         </div>
-
+        <!-- форма показывается, когда надо загадывать фразу -->
         <form
           v-if="!showGuessInput"
           @submit.prevent="submitPhrase"
@@ -66,10 +69,8 @@ const game = useGameStore()
 const {
   phrase,
   emojis,
-  originalPhrase,
   showGuessInput,
   currentGuess,
-  guesses,
   activeUserIndex,
   currentUserIndex,
   users

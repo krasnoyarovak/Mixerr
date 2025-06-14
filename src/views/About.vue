@@ -10,7 +10,7 @@
         Mixerr — это многопользовательская игра, в которой эмоции важнее слов! 🎮<br />
         Наша цель — объединять людей через язык эмодзи и весёлые переводы.
       </p>
-
+      <!-- создаем форму для отправки -->
       <form @submit.prevent="submitForm" class="form-block mx-auto">
         <h2 class="form-title">Оставь отзыв или идею</h2>
 
@@ -43,6 +43,7 @@
 </template>
 
 <script setup>
+// Задаём имя компонента для отладки
 defineOptions({ name: 'AboutPage' })
 
 import AppNavbar from '@/components/AppNavbar.vue'
@@ -52,6 +53,7 @@ import { useGameStore } from '@/stores/gameStore'
 import { storeToRefs } from 'pinia'
 
 const game = useGameStore()
+//storeToRefs() делает name и message реактивными, и они будут корректно отслеживаться Vue в шаблоне
 const { name, message } = storeToRefs(game)
 const { submitForm } = game
 </script>
@@ -68,25 +70,27 @@ const { submitForm } = game
   font-size: 22px;
 }
 
+/* Описание под заголовком */
 .opisanie {
   font-family: 'Press Start 2P', monospace;
   font-size: 13px;
   color: var(--muted);
 }
 
+/* Контейнер формы обратной связи */
 .form-block {
   max-width: 600px;
   font-family: 'Press Start 2P', monospace;
   position: relative;
   z-index: 1;
 }
-
+/* Заголовок формы */
 .form-title {
   color: var(--svet);
   font-size: 16px;
   margin-bottom: 20px;
 }
-
+/* Поля ввода и textarea с пиксельным стилем */
 .pixel-input {
   background-color: var(--fon);
   color: var(--svet);
@@ -115,6 +119,6 @@ const { submitForm } = game
   image-rendering: pixelated;
   z-index: 0;
   opacity: 0.3;
-  pointer-events: none;
+  pointer-events: none; /* Игнорируем клики мыши */
 }
 </style>
