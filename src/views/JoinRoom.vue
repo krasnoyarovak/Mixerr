@@ -9,16 +9,19 @@
           <div class="avatar-wrapper mb-3">
             <img :src="avatarToShow" alt="avatar" class="avatar-img" />
           </div>
+          <!--Поле для загрузки файла с устройства.-->
           <input type="file" accept="image/*" @change="handleAvatarUpload" class="custom-file pixel-input" />
         </div>
       </div>
 
       <!-- правая часть -->
       <div class="right-side d-flex flex-column justify-content-center align-items-start" style="padding: 0 60px;">
+        <!-- форма для создания комнаты -->
         <form @submit.prevent="handleSubmit" class="form-fixed-block">
           <h1 class="zagolovok mb-5 text-center w-100">ПРИСОЕДИНИТЬСЯ</h1>
 
           <label for="username" class="form-label">Имя игрока:</label>
+          <!-- поле ввода имени -->
           <input
             type="text"
             id="username"
@@ -28,6 +31,7 @@
           />
 
           <label for="roomInput" class="form-label">Код комнаты:</label>
+          <!-- поле ввода кода комнаты -->
           <input
             type="text"
             id="roomInput"
@@ -54,13 +58,14 @@ import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const gameStore = useGameStore()
-const { name, avatar, roomCode } = storeToRefs(gameStore)
-const { handleAvatarUpload } = gameStore
+const { avatar } = storeToRefs(gameStore)   // реактивный avatar из Pinia
+const { handleAvatarUpload } = gameStore    // метод загрузки аватара
 
+//реактивное свойство (пересчитывается при изменении, когда пользователь загрузил аватарку)
 const avatarToShow = computed(() => avatar.value || gameStore.defaultAvatar)
 
 function handleSubmit() {
-  router.push('/room')
+  router.push('/room') // Переход на страницу комнаты
 }
 </script>
 
